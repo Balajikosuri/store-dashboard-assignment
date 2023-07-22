@@ -1,0 +1,14 @@
+GET http://localhost:3002/api/statistics/1
+
+###
+
+GET http://localhost:3002/api/initializeDatabase
+###
+
+GET http://localhost:3002/api/barChart/1
+
+
+###
+
+GET http://localhost:3002/api/pieChart/1
+
