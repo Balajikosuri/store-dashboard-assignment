@@ -1,14 +1,30 @@
-GET http://localhost:3002/api/statistics/1
+
+# initializeDatabase
+GET http://localhost:8000/api/initializeDatabase
+###
+
+
+# statistics
+GET http://localhost:8000/api/statistics/2
 
 ###
 
-GET http://localhost:3002/api/initializeDatabase
+
+# barChart
+
+GET http://localhost:8000/api/barChart/1
+
+
 ###
 
-GET http://localhost:3002/api/barChart/1
+
+# pieChart
+GET http://localhost:8000/api/pieChart/1
 
 
 ###
 
-GET http://localhost:3002/api/pieChart/1
+
+# combinedData
+GET http://localhost:8000/api/combinedData/1
 

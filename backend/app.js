@@ -5,12 +5,12 @@ const axios = require('axios')
 const cors = require('cors')
 
 const app = express()
-const PORT = 3002 // You can use any available port here
+const PORT = 8000 // You can use any available port here
 
-// Sample seed data (initialize as an empty array)
 let database = []
 
 // Middleware
+
 app.use(cors())
 
 app.use(bodyParser.json())
@@ -65,12 +65,16 @@ app.get('/api/statistics/:month', (req, res) => {
   const month = parseInt(req.params.month)
   const dataForMonth = filterDataByMonth(month)
 
-  const totalSaleAmount = dataForMonth.reduce(
-    (total, item) => total + item.price,
-    0,
+  const totalSaleAmount = Math.floor(
+    dataForMonth.reduce((total, item) => total + item.price, 0),
   )
-  const totalSoldItems = dataForMonth.filter(item => item.sold).length
-  const totalNotSoldItems = dataForMonth.filter(item => !item.sold).length
+  const totalSoldItems = Math.floor(
+    dataForMonth.filter(item => item.sold).length,
+  )
+
+  const totalNotSoldItems = Math.floor(
+    dataForMonth.filter(item => !item.sold).length,
+  )
 
   res.json({
     totalSaleAmount,
@@ -170,5 +174,7 @@ app.get('/api/combinedData/:month', async (req, res) => {
 })
 
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`)
+  console.log(`Server started on port http://localhost:${PORT}`)
 })
+
+module.exports = app

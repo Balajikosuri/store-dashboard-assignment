@@ -1,16 +1,21 @@
 import {Component} from 'react'
 
-import Cookies from 'js-cookie'
-
 import Loader from 'react-loader-spinner'
 
 import {BiStore} from 'react-icons/bi'
 
-// import VaccinationCoverage from '../VaccinationCoverage'
-// import VaccinationByGender from '../VaccinationByGender'
-// import VaccinationByAge from '../VaccinationByAge'
+import Statistics from '../Statistics'
+import StatsOfIndividual from '../StatsOfIndividual'
+
+import BarChartPage from '../BarChartPage'
+import BargraphIndividual from '../BargraphIndividual'
+
+import PieChartPage from '../PieChartPage'
+import PieChartIndividual from '../PieChartIndividual'
 
 import './index.css'
+
+import Filter from '../Filter'
 
 const apiStatusConstants = {
   initial: 'INITIAL',
@@ -19,54 +24,65 @@ const apiStatusConstants = {
   loading: 'LOADING',
 }
 
+const MonthsArray = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
 class StoreDashBoard extends Component {
   state = {
     apiStatus: apiStatusConstants.initial,
-    last7DaysVaccinationList: [],
-    vaccinationByAgeList: [],
-    vaccinationByGenderList: [],
+    selectedMonth: 1,
+
+    isChecked: false,
+
+    combinedData: [],
   }
 
   componentDidMount() {
     this.getDataFromApi()
   }
 
-  getFormattedlast7dayData = data => ({
-    vaccineDate: data.vaccine_date,
-    dose1: data.dose_1,
-    dose2: data.dose_2,
-  })
+  onCheckBox = () => {
+    this.setState(prevState => ({isChecked: !prevState.isChecked}))
+  }
+
+  onChangeMonth = value => {
+    this.setState({selectedMonth: value}, this.getDataFromApi)
+  }
 
   getDataFromApi = async () => {
-    const jwtToken = Cookies.get('jwt_token')
+    const {selectedMonth} = this.state
+
     this.setState({apiStatus: apiStatusConstants.loading})
-    const options = {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-        'Access-Control-Allow-Origin': 'no-cors',
-      },
-    }
-    const url = 'https://s3.amazonaws.com/roxiler.com/product_transaction.json'
 
-    const response = await fetch('', options)
+    const ApiUrl = `http://localhost:8000/api/combinedData/${selectedMonth}`
+
+    const response = await fetch(ApiUrl)
     const jsonData = await response.json()
-
-    console.log(jwtToken)
 
     if (response.ok === true) {
       this.setState({
         apiStatus: apiStatusConstants.success,
+        combinedData: jsonData,
       })
     } else {
       this.setState({apiStatus: apiStatusConstants.failure})
     }
-
-    // console.table(formattedLast7DaysVaccinationList)
   }
 
   renderLoaderPage = () => (
-    <div data-testid="loader">
+    <div>
       <Loader type="ThreeDots" color="#ffffff" height={80} width={80} />
     </div>
   )
@@ -82,42 +98,49 @@ class StoreDashBoard extends Component {
     </li>
   )
 
-  renderCowinCoverageSection = () => {
-    const {last7DaysVaccinationList} = this.state
+  //
+
+  renderAllSections = () => {
+    const {combinedData, selectedMonth} = this.state
+    console.log(combinedData, new Date().toLocaleTimeString())
+
     return (
       <>
-        <h2>VaccinationCoverage</h2>
-        {/* <VaccinationCoverage
-          last7DaysVaccinationList={last7DaysVaccinationList}
-        /> */}
+        <li className="li-item">
+          <h2 className="heading-each-section">
+            Statistics -
+            <span className="in-the-month">
+              {' '}
+              In the month of {MonthsArray[selectedMonth - 1]}
+            </span>
+          </h2>
+          <Statistics statisticsData={combinedData.statistics} />
+        </li>
+        <li className="li-item">
+          <h2 className="heading-each-section">
+            {' '}
+            Bar Chart -
+            <span className="in-the-month">
+              {' '}
+              In the month of {MonthsArray[selectedMonth - 1]}
+            </span>
+          </h2>
+          <BarChartPage barChartData={combinedData.barChartData} />
+        </li>
+        <li className="li-item">
+          <h2 className="heading-each-section">
+            {' '}
+            Pie Chart -
+            <span className="in-the-month">
+              {' '}
+              In the month of {MonthsArray[selectedMonth - 1]}
+            </span>
+          </h2>
+          <PieChartPage pieChartData={combinedData.pieChartData} />
+        </li>
       </>
     )
   }
-
-  renderVaccinationByGenderSection = () => {
-    const {vaccinationByGenderList} = this.state
-    return (
-      <h2>VaccinationByGender</h2>
-      //   <VaccinationByGender vaccinationByGenderList={vaccinationByGenderList} />
-    )
-  }
-
-  renderVaccinationByAgeSection = () => {
-    const {vaccinationByAgeList} = this.state
-    return <h2>VaccinationByAge</h2>
-    // <VaccinationByAge vaccinationByAgeList={vaccinationByAgeList} />
-  }
-
-  //
-
-  renderAllSections = () => (
-    <>
-      <li className="li-item">{this.renderCowinCoverageSection()}</li>
-      <li className="li-item">{this.renderVaccinationByGenderSection()}</li>
-      <li className="li-item">{this.renderVaccinationByAgeSection()}</li>
-    </>
-  )
-  //
 
   renderResultPage = () => {
     const {apiStatus} = this.state
@@ -136,7 +159,37 @@ class StoreDashBoard extends Component {
     }
   }
 
+  renderIndividualPage = () => {
+    const {isChecked} = this.state
+    const activeClassName = isChecked && 'active-btn'
+    return (
+      <>
+        <div className="Track-Individually-container">
+          <button
+            type="button"
+            className={`Individually-btn ${activeClassName}`}
+            onClick={this.onCheckBox}
+          >
+            Track Individually
+          </button>
+        </div>
+        {isChecked && (
+          <div className="responsive">
+            <StatsOfIndividual />
+
+            <BargraphIndividual />
+
+            <PieChartIndividual />
+          </div>
+        )}
+        {isChecked && <hr className="h-line" />}
+      </>
+    )
+  }
+
   render() {
+    const {selectedMonth, isChecked} = this.state
+
     return (
       <div className="app-container">
         <nav className="navbar">
@@ -145,8 +198,20 @@ class StoreDashBoard extends Component {
             <h2 className="app-heading">Store</h2>
           </div>
         </nav>
-        <h1 className="store-heading">Categories In Store</h1>
-        <div className="responsive">{this.renderResultPage()}</div>
+
+        <h2 className="sub-heading">Store Dashboard</h2>
+
+        {this.renderIndividualPage()}
+
+        {!isChecked && (
+          <>
+            <Filter month={selectedMonth} onChangeMonth={this.onChangeMonth} />
+            <div className="responsive">
+              <> {this.renderResultPage()}</>
+            </div>
+            <hr className="h-line" />
+          </>
+        )}
       </div>
     )
   }

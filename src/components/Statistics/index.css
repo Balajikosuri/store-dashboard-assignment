@@ -1,0 +1,39 @@
+.Statistics-container {
+  background-color: whitesmoke;
+  width: min(90%, 500px);
+
+  padding: 4%;
+  border-radius: 10px;
+  box-shadow: 2px 2px 15px yellow;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: black;
+}
+.card-heading {
+  font-family: 'bree serif';
+  font-weight: bold;
+  /* font-size: 20px; */
+  /* font-style: italic; */
+}
+
+.span-item {
+  color: blue;
+  font-weight: 600;
+  margin-left: 5px;
+}
+.sub-heading {
+  font-weight: 500;
+  color: #000000;
+  font-size: 16px;
+}
+
+.not-sold {
+  color: red;
+}
+
+.sold{
+    color: green;
+}
